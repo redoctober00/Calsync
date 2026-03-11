@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:opsz,wght@9..40,300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+
+    /* Background & surfaces */
+    --background:   222 47% 8%;
+    --card:         222 40% 11%;
+    --popover:      222 40% 11%;
+
+    /* Foreground */
+    --foreground:         210 30% 92%;
+    --card-foreground:    210 30% 92%;
+    --popover-foreground: 210 30% 92%;
+
+    /* Primary — amber/gold */
+    --primary:            40 90% 60%;
+    --primary-foreground: 222 47% 8%;
+
+    /* Secondary */
+    --secondary:          222 35% 18%;
+    --secondary-foreground: 210 25% 80%;
+
+    /* Muted */
+    --muted:              222 35% 16%;
+    --muted-foreground:   215 20% 50%;
+
+    /* Accent */
+    --accent:             222 35% 18%;
+    --accent-foreground:  210 30% 92%;
+
+    /* Destructive */
+    --destructive:        0 65% 55%;
+    --destructive-foreground: 210 30% 95%;
+
+    /* Border, input, ring */
+    --border: 222 30% 20%;
+    --input:  222 35% 14%;
+    --ring:   40 90% 60%;
+
+    --radius: 0.875rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html, body, #root {
+    height: 100%;
+  }
+
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    @apply bg-background text-foreground antialiased;
+    background-color: hsl(222, 47%, 8%);
+    background-image:
+      /* noise grain */
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
+      /* radial mesh gradients */
+      radial-gradient(ellipse 80% 60% at 20% 10%, hsla(222,70%,16%,0.9) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 90%, hsla(215,60%,12%,0.8) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 50% 50%, hsla(222,50%,10%,1) 0%, transparent 100%);
+    min-height: 100vh;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    text-wrap: balance;
+  }
+
+  /* Focus-visible rings for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Prefer reduced motion: disable animations */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ── Entrance animations ──────────────────────────────────── */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.animate-fade-in {
+  animation: fadeIn 0.4s ease both;
+}
+.animate-scale-in {
+  animation: scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Staggered delays */
+.delay-100 { animation-delay: 0.10s; }
+.delay-200 { animation-delay: 0.20s; }
+.delay-300 { animation-delay: 0.30s; }
+
+/* ── Custom scrollbar ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: hsl(222, 30%, 25%);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(40, 90%, 60%, 0.5);
+}
+
+/* ── touch-action on interactive elements ─────────────────── */
+button, a, [role="button"] {
+  touch-action: manipulation;
+}
