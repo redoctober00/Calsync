@@ -34,15 +34,16 @@ export default function UpcomingEvents({
 }: UpcomingEventsProps) {
   const isControlled = propEvents !== undefined
 
-  const [events, setEvents] = useState<CalendarEvent[]>(propEvents ?? [])
+  const [internalEvents, setInternalEvents] = useState<CalendarEvent[]>([])
   const [loading, setLoading] = useState(!isControlled)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
+  const events = isControlled ? propEvents! : internalEvents
+
   useEffect(() => {
     if (isControlled) {
-      setEvents(propEvents!)
       setLoading(false)
       setLastUpdated(new Date())
     }
@@ -55,7 +56,7 @@ export default function UpcomingEvents({
     setError(null)
     try {
       const data = await getUpcomingEvents()
-      setEvents(data)
+      setInternalEvents(data)
       setLastUpdated(new Date())
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load events')

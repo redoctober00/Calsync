@@ -31,6 +31,7 @@ interface DayEvent {
   bgColor?: string    // Raw hex color (Google events)
   href?: string
   supabaseEvent?: SupabaseEvent
+  googleEvent?: CalendarEvent
 }
 
 function toDateKey(year: number, month: number, day: number): string {
@@ -74,6 +75,8 @@ export default function CalendarView({
       map.get(key)!.push(event)
     }
 
+    const activeLocalSet = new Set(activeLocalCalendars)
+
     // Build calendarId → backgroundColor for Google events that DON'T map to a local type
     const calColorMap = new Map<string, string>()
     for (const gc of googleCalendars) {
@@ -89,13 +92,14 @@ export default function CalendarView({
 
       if (localType) {
         // This Google Calendar maps to a local type — apply local color and respect local toggle
-        if (!activeLocalCalendars.includes(localType)) continue
+        if (!activeLocalSet.has(localType)) continue
         const cal = getCalendarConfig(localType)
         add(key, {
           id: ev.id,
           title: ev.title,
           pillClass: cal.pillClass,
           href: ev.htmlLink,
+          googleEvent: ev,
         })
       } else {
         // Un-mapped Google Calendar — show with real Google color
@@ -106,6 +110,7 @@ export default function CalendarView({
           pillClass: '',
           bgColor: bg,
           href: ev.htmlLink,
+          googleEvent: ev,
         })
       }
     }
@@ -113,7 +118,7 @@ export default function CalendarView({
     // Supabase events — filtered by activeLocalCalendars
     // (Skip if the event has a google_calendar_id — it's already shown via Google events above)
     for (const ev of supabaseEvents) {
-      if (!activeLocalCalendars.includes(ev.calendar_type)) continue
+      if (!activeLocalSet.has(ev.calendar_type)) continue
       if (ev.google_calendar_id) continue  // avoid duplicate if mirrored to Google Calendar
       const key = supabaseEventToDateKey(ev)
       if (!key) continue
@@ -290,8 +295,7 @@ export default function CalendarView({
                         key={ev.id}
                         onClick={(e) => {
                           e.stopPropagation()
-                          const fullEvent = events.find(g => g.id === ev.id)
-                          if (fullEvent) onGoogleEventClick?.(fullEvent)
+                          if (ev.googleEvent) onGoogleEventClick?.(ev.googleEvent)
                         }}
                         className="block w-full text-left truncate rounded px-1.5 py-0.5 text-[10px] sm:text-[11px] font-medium
                                    bg-amber-400/10 text-amber-400 border border-amber-400/20

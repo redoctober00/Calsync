@@ -103,8 +103,10 @@ export const CALENDARS = [
 
 export type CalendarId = (typeof CALENDARS)[number]['id']
 
+const CALENDARS_MAP = new Map(CALENDARS.map(c => [c.id, c]))
+
 export function getCalendarConfig(id: string) {
-  return CALENDARS.find((c) => c.id === id) ?? CALENDARS[2]
+  return CALENDARS_MAP.get(id as CalendarId) ?? CALENDARS[2]
 }
 
 // ── Auth API ─────────────────────────────────────────────────────────────────
